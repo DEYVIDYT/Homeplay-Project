@@ -1,0 +1,3 @@
+Qpython 3L - Android
+
+pip3 install requests==2.25.1
