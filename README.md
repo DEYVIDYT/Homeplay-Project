@@ -25,4 +25,14 @@ Você pode colaborar para manter o app atualizado adicionando novas listas IPTV.
 - **Download do App:** [Baixe Aqui](https://github.com/DEYVIDYT/Z-tv-play/releases/download/Vodaapsztv/Home.Play_1.1.6.apk)
 - **Código Fonte e Hospedagem:** [GitHub](https://github.com/DEYVIDYT/Homeplay-Project)
 
-Aproveite sua experiência com o Home Play e não deixe de colaborar para torná-lo ainda melhor!
+## Para Desenvolvedores
+
+Se você é um desenvolvedor e deseja fazer a verificação de logins ativos ou não, siga os passos abaixo:
+
+1. Você precisa do app QPYTHON 3L: [QPython 3L](https://play.google.com/store/apps/details?id=org.qpython.qpy3)
+
+2. Abra o QPYTHON e vá em QPYPI > pip console e instale a biblioteca necessária com o seguinte comando: `pip3 install requests==2.25.1`
+
+3. Coloque as informações FTP da sua hospedagem e o caminho do arquivo txt.php.
+
+Pronto! Agora você já pode fazer a verificação de logins ativos ou não.
