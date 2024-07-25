@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pesquisar Jogos</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f0f0f5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .toolbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #007aff;
+            padding: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            height: 60px;
+            box-sizing: border-box;
+        }
+        .toolbar .menu-button {
+            position: absolute;
+            left: 10px;
+            font-size: 24px;
+            color: white;
+            cursor: pointer;
+        }
+        .toolbar h1 {
+            margin: 0;
+            font-size: 18px;
+            color: white;
+            text-align: center;
+        }
+        .toolbar h1 a {
+            color: white;
+            text-decoration: none;
+        }
+        .toolbar h1 a:hover {
+            text-decoration: underline;
+        }
+        .menu {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            width: 100%;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px 0;
+            z-index: 999;
+        }
+        .menu.active {
+            display: flex;
+        }
+        .menu a {
+            text-decoration: none;
+            color: #007aff;
+            padding: 10px 20px;
+            font-size: 16px;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
+            display: block;
+        }
+        .menu a:hover {
+            background-color: #f0f0f5;
+        }
+        .search-container {
+            text-align: center;
+            margin-top: 80px;
+            margin-bottom: 20px;
+        }
+        input, button, select {
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 12px;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin: 5px;
+        }
+        button {
+            background-color: #007aff;
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+        button:hover {
+            background-color: #0051a8;
+        }
+        .results-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .game {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 10px;
+            padding: 15px;
+            width: 90%;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
+        }
+        .game-details {
+            width: 100%;
+        }
+        .game h2 {
+            font-size: 18px;
+            margin: 0 0 10px;
+            color: #333;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .game p {
+            margin: 5px 0;
+            color: #666;
+        }
+        .magnet-link {
+            color: #007aff;
+            text-decoration: none;
+            display: block;
+            margin-top: 10px;
+        }
+        .magnet-link:hover {
+            text-decoration: underline;
+        }
+        .source {
+            font-weight: 600;
+            color: #999;
+            margin-bottom: 10px;
+        }
+        .credits {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 16px;
+            color: #007aff;
+        }
+        .credits a {
+            color: #007aff;
+            text-decoration: none;
+        }
+        .credits a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="toolbar">
+        <div class="menu-button" onclick="toggleMenu()">☰</div>
+        <h1><a href="https://youtube.com/@hail-games?si=ShSKldSxL5pDIyt-" target="_blank">Hydra Search By @HailGames</a></h1>
+    </div>
+    <div id="menu" class="menu">
+        <a href="https://chat.whatsapp.com/CXSrf49mzhXEKQsJzxvZ8H" target="_blank">Grupo WhatsApp</a>
+        <a href="https://youtube.com/@hail-games?si=BnlRnwJSehCRV9bw" target="_blank">Canal YouTube</a>
+    </div>
+
+    <div class="search-container">
+        <input type="text" id="search-input" placeholder="Digite o nome do jogo">
+        <select id="source-select">
+            <option value="all">Todas as Fontes</option>
+            <option value="Dodi">Dodi</option>
+            <option value="Empress">Empress</option>
+            <option value="Fitgirl">Fitgirl</option>
+            <option value="Free Gog">Free Gog</option>
+            <option value="KaOsKrew">KaOsKrew</option>
+            <option value="OnlineFix">OnlineFix</option>
+            <option value="Tyni Repacks">Tyni Repacks</option>
+            <option value="Xatab">Xatab</option>
+            <option value="Rutracker">Rutracker</option>
+            <option value="gamestorrentsfm">gamestorrentsfm</option>
+            <option value="SteamRip">SteamRip</option>
+        </select>
+        <button onclick="searchGames()">Pesquisar</button>
+    </div>
+
+    <div id="results" class="results-container"></div>
+
+    <script>
+        const sources = {
+            "Dodi": "https://hydralinks.cloud/sources/dodi.json",
+            "Empress": "https://hydralinks.cloud/sources/empress.json",
+            "Fitgirl": "https://hydralinks.cloud/sources/fitgirl.json",
+            "Free Gog": "https://hydralinks.cloud/sources/gog.json",
+            "KaOsKrew": "https://hydralinks.cloud/sources/kaoskrew.json",
+            "OnlineFix": "https://hydralinks.cloud/sources/onlinefix.json",
+            "Tyni Repacks": "https://hydralinks.cloud/sources/tinyrepacks.json",
+            "Xatab": "https://hydralinks.cloud/sources/xatab.json",
+            "Rutracker": "https://raw.githubusercontent.com/KekitU/rutracker-hydra-links/main/all_categories.json",
+            "gamestorrentsfm": "https://raw.githubusercontent.com/DEYVIDYT/HydraSearch/main/gamestorrentsfm.json",
+            "SteamRip": "https://raw.githubusercontent.com/DEYVIDYT/HydraSearch/main/SteamRip.json"
+        };
+
+        function normalizeString(str) {
+            return str.replace(/[^\w]/g, '').toLowerCase();
+        }
+
+        function getHostname(url) {
+            const a = document.createElement('a');
+            a.href = url;
+            return a.hostname.replace('www.', '');
+        }
+
+        async function searchGames() {
+            const query = normalizeString(document.getElementById('search-input').value);
+            const selectedSource = document.getElementById('source-select').value;
+            const resultsContainer = document.getElementById('results');
+            resultsContainer.innerHTML = '';
+
+            for (const [sourceName, sourceUrl] of Object.entries(sources)) {
+                if (selectedSource !== 'all' && selectedSource !== sourceName) {
+                    continue;
+                }
+
+                try {
+                    const response = await fetch(sourceUrl);
+                    const data = await response.json();
+
+                    const filteredGames = data.downloads.filter(game => normalizeString(game.title).includes(query));
+
+                    if (filteredGames.length > 0) {
+                        for (const game of filteredGames) {
+                            const gameElement = document.createElement('div');
+                            gameElement.classList.add('game');
+
+                            const gameDetails = document.createElement('div');
+                            gameDetails.classList.add('game-details');
+                            gameElement.appendChild(gameDetails);
+
+                            const sourceElement = document.createElement('div');
+                            sourceElement.classList.add('source');
+                            sourceElement.textContent = `Fonte: ${sourceName}`;
+                            gameDetails.appendChild(sourceElement);
+
+                            const gameTitle = document.createElement('h2');
+                            gameTitle.textContent = game.title;
+                            gameDetails.appendChild(gameTitle);
+
+                            const gameDate = document.createElement('p');
+                            gameDate.textContent = `Data de Upload: ${new Date(game.uploadDate).toLocaleDateString()}`;
+                            gameDetails.appendChild(gameDate);
+
+                            const gameSize = document.createElement('p');
+                            gameSize.textContent = `Tamanho do Arquivo: ${game.fileSize}`;
+                            gameDetails.appendChild(gameSize);
+
+                            game.uris.forEach(uri => {
+                                const magnetLink = document.createElement('a');
+                                magnetLink.href = uri;
+                                const hostname = getHostname(uri);
+                                magnetLink.textContent = `Download via ${hostname}`;
+                                magnetLink.classList.add('magnet-link');
+                                magnetLink.target = '_blank';
+                                gameDetails.appendChild(magnetLink);
+                            });
+
+                            resultsContainer.appendChild(gameElement);
+                        }
+                    }
+                } catch (error) {
+                    console.error(`Erro ao buscar jogos da fonte ${sourceName}:`, error);
+                }
+            }
+
+            if (resultsContainer.innerHTML === '') {
+                resultsContainer.innerHTML = '<p>Nenhum jogo encontrado.</p>';
+            }
+        }
+
+        function toggleMenu() {
+            const menu = document.getElementById('menu');
+            menu.classList.toggle('active');
+        }
+
+        async function loadRecentGames() {
+            const resultsContainer = document.getElementById('results');
+            resultsContainer.innerHTML = '';
+
+            let allGames = [];
+
+            for (const [sourceName, sourceUrl] of Object.entries(sources)) {
+                try {
+                    const response = await fetch(sourceUrl);
+                    const data = await response.json();
+                    const games = data.downloads.map(game => ({
+                        ...game,
+                        source: sourceName
+                    }));
+                    allGames = allGames.concat(games);
+                } catch (error) {
+                    console.error(`Erro ao buscar jogos da fonte ${sourceName}:`, error);
+                }
+            }
+
+            allGames.sort((a, b) => new Date(b.uploadDate) - new Date(a.uploadDate));
+            const recentGames = allGames.slice(0, 10);
+
+            for (const game of recentGames) {
+                const gameElement = document.createElement('div');
+                gameElement.classList.add('game');
+
+                const gameDetails = document.createElement('div');
+                gameDetails.classList.add('game-details');
+                gameElement.appendChild(gameDetails);
+
+                const sourceElement = document.createElement('div');
+                sourceElement.classList.add('source');
+                sourceElement.textContent = `Fonte: ${game.source}`;
+                gameDetails.appendChild(sourceElement);
+
+                const gameTitle = document.createElement('h2');
+                gameTitle.textContent = game.title;
+                gameDetails.appendChild(gameTitle);
+
+                const gameDate = document.createElement('p');
+                gameDate.textContent = `Data de Upload: ${new Date(game.uploadDate).toLocaleDateString()}`;
+                gameDetails.appendChild(gameDate);
+
+                const gameSize = document.createElement('p');
+                gameSize.textContent = `Tamanho do Arquivo: ${game.fileSize}`;
+                gameDetails.appendChild(gameSize);
+
+                game.uris.forEach(uri => {
+                    const magnetLink = document.createElement('a');
+                    magnetLink.href = uri;
+                    const hostname = getHostname(uri);
+                    magnetLink.textContent = `Download via ${hostname}`;
+                    magnetLink.classList.add('magnet-link');
+                    magnetLink.target = '_blank';
+                    gameDetails.appendChild(magnetLink);
+                });
+
+                resultsContainer.appendChild(gameElement);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadRecentGames);
+    </script>
+
+    <div class="credits">
+        <p>Hydra Search By <a href="https://youtube.com/@hail-games?si=ShSKldSxL5pDIyt-" target="_blank">@HailGames</a></p>
+    </div>
+</body>
+</html>
